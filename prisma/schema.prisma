@@ -4,27 +4,30 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  phone     String?
-  products  Product[]
-  orders    Order[]
-  tokens    Token[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              String       @id @default(uuid())
+  name            String
+  email           String?      @unique
+  password        String    
+  role            String       @default("user")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  isEmailVerified Boolean      @default(false)
+  tokens          Token[]
+  products        Product[]
+  orders          Order[]
 }
 
 model Product {
   id              String      @id @default(uuid())
   name            String
-  description     String?
+  description     String
   price           Float       
   quantityInStock Int
+  categoryId      String     
+  category        Category    @relation(fields: [categoryId], references: [id])
   userId          String
   user            User        @relation(fields: [userId], references: [id])
   orderItems      OrderItem[]
@@ -57,18 +60,21 @@ model OrderItem {
 }
 
 model Category {
-  id   String @id @default(uuid())
-  name String 
+  id        String @id @default(uuid())
+  name      String 
+  products  Product[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Token {
   id          String   @id @default(uuid())
-  token       String  
+  token       String   @db.VarChar(400)
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   type        String   
   expires     DateTime
-  blacklisted Boolean  
+  blacklisted Boolean  @default (false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
