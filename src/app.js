@@ -4,6 +4,10 @@ import config from './config/config.js';
 import { successHandler, errorHandler as morganErrorHandler } from './config/morgan.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
 import ApiError from './utils/ApiError.js';
+import helmet from 'helmet';
+import xss from 'xss'
+import compression from 'compression';
+import cors from 'cross'
 
 const app = express();
 
@@ -12,11 +16,24 @@ if (config.env !== 'test') {
   app.use(morganErrorHandler);
 }
 
+// set security HTTP headers
+app.use(helmet());
+
 // aktifin parsing json
 app.use(express.json());
 
 // aktifin urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+// sanitize request data
+app.use(xss());
+
+// gzip compression
+app.use(compression());
+
+// enable cors
+app.use(cors());
+app.options('*', cors());
 
 app.get('/', (req, res) => {
   res.send('hello world');
