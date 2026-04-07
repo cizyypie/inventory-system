@@ -1,13 +1,15 @@
-import express from "express";
+import express from 'express';
+import { status } from 'http-status';
 import config from './config/config.js';
-import { successHandler, errorHandler } from './config/morgan.js';
-import userRoute from "./routes/userRoute.js";
+import { successHandler, errorHandler as morganErrorHandler } from './config/morgan.js';
+import { errorConverter, errorHandler } from './middlewares/error.js';
+import ApiError from './utils/ApiError.js';
 
 const app = express();
 
 if (config.env !== 'test') {
   app.use(successHandler);
-  app.use(errorHandler);
+  app.use(morganErrorHandler);
 }
 
 // aktifin parsing json
@@ -19,6 +21,18 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('hello world');
 });
-app.use("/users", userRoute);
+
+// app.use(router);
+
+// send 404 error jika route tidak ada
+app.use((req, res, next) => {
+  next(new ApiError(status.NOT_FOUND, 'Not found'));
+});
+
+// convert error jadi Instance API Error jika ada error yang tidak ketangkap
+app.use(errorConverter);
+
+// handle error
+app.use(errorHandler);
 
 export default app;
