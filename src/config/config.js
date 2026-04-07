@@ -1,10 +1,19 @@
-import { config } from 'dotenv';
-import { join } from 'path';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
-config({ path: join(__dirname, '../../.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export const env = process.env.NODE_ENV;
-export const port = process.env.PORT;
-export const database = {
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+const config = {
+  env: process.env.NODE_ENV,
+  port: process.env.PORT,
+  database: {
     url: process.env.DATABASE_URL
+  }
 };
+
+export default config;
+
