@@ -2,8 +2,7 @@ import * as userService from '../services/userService.js';
 import { createUserSchema, updateUserSchema } from '../validations/userValidation.js';
 import catchAsync from '../utils/catchAsync';
 import ApiError from '../utils/ApiError';
-import httpStatus from 'http-status';
-const { status } = httpStatus;
+import status from 'http-status';
 
 export const createUser = catchAsync(async (req, res) => {
   const validatedData = createUserSchema.parse(req.body);

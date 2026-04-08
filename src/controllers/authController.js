@@ -1,11 +1,9 @@
-
 import catchAsync from '../utils/catchAsync.js';
 import authService from '../services/authService.js';
 import userService from '../services/userService.js';
 import tokenService from '../services/tokenService.js';
 import ApiError from '../utils/ApiError.js';
-import httpStatus from 'http-status';
-const { status } = httpStatus;
+import status from 'http-status';
 
 const register = catchAsync(async (req, res) => {
   const existingUser = await userService.getUserByEmail(req.body.email);

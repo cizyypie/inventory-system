@@ -1,8 +1,7 @@
 import passport from 'passport';
 import ApiError from '../utils/ApiError';
-import httpStatus from 'http-status';
-const { status } = httpStatus;
-  
+import status from 'http-status';
+
 const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
   if (err || info || !user) {
     return reject(new ApiError(status.UNAUTHORIZED, 'Please authenticate'));

@@ -1,9 +1,5 @@
-import httpStatus from 'http-status';
-const { status } = httpStatus;  
-
+import status from 'http-status';
 import bcrypt from 'bcryptjs';
-const { compare } = bcrypt;
-
 import userService from './userService.js';
 import ApiError from '../utils/ApiError.js';
 
@@ -20,7 +16,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     throw new ApiError(status.UNAUTHORIZED, 'Incorrect email or password');
   }
 
-  const validPassword = await compare(password, user.password);
+  const validPassword = await bcrypt.compare(password, user.password);
 
   if (!validPassword) {
     throw new ApiError(status.UNAUTHORIZED, 'Incorrect email or password');

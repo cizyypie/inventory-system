@@ -2,8 +2,7 @@ import config from '../config/config.js';
 import logger from '../config/logger.js';
 import ApiError from '../utils/ApiError.js';
 import { Prisma } from '@prisma/client';
-import httpStatus from 'http-status';
-const { status } = httpStatus;
+import status from 'http-status';
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
@@ -13,11 +12,11 @@ const errorConverter = (err, req, res, next) => {
       const message = err.response.data.message || err.response.data;
       const statusCode = error.response.status;
 
-      logger.info("handleAxiosError");
+      logger.info('handleAxiosError');
       error = new ApiError(statusCode, message, false, err.stack);
     } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
       // Handling Prisma Error
-      logger.info("handlePrismaError");
+      logger.info('handlePrismaError');
       error = handlePrismaClientError(err);
     } else if (err instanceof Prisma.PrismaClientInitializationError) {
       // Handle initialization errors (e.g., connection issues)
@@ -76,7 +75,4 @@ const errorHandler = (err, req, res, next) => {
   res.status(statusCode).send(response);
 };
 
-export {
-  errorConverter,
-  errorHandler,
-};
+export { errorConverter, errorHandler };

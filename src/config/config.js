@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { join } from 'path';
 
-config({ path: join(process.cwd(), '../../.env') });
+config({ path: join(process.cwd(), '.env') });
 
 const appConfig = {
   env: process.env.NODE_ENV,

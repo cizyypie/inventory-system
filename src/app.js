@@ -1,5 +1,5 @@
 import express from 'express';
-import router from './routes/v1/index.js'
+import router from './routes/v1/index.js';
 import config from './config/config.js';
 import { successHandler, errorHandler as morganErrorHandler } from './config/morgan.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
@@ -8,10 +8,9 @@ import helmet from 'helmet';
 import xss from 'xss-clean';
 import compression from 'compression';
 import cors from 'cors';
-import { jwtStrategy } from'./config/passport.js';
-import passport from'passport';
-import httpStatus from 'http-status';
-const { status } = httpStatus;
+import { jwtStrategy } from './config/passport.js';
+import passport from 'passport';
+import status from 'http-status';
 
 const app = express();
 
@@ -48,7 +47,6 @@ app.get('/', (req, res) => {
 });
 // v1 api routes
 app.use('/v1', router);
-
 
 // app.use(router);
 
