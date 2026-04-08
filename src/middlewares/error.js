@@ -1,8 +1,9 @@
-import { status } from 'http-status';
 import config from '../config/config.js';
 import logger from '../config/logger.js';
 import ApiError from '../utils/ApiError.js';
 import { Prisma } from '@prisma/client';
+import httpStatus from 'http-status';
+const { status } = httpStatus;
 
 const errorConverter = (err, req, res, next) => {
   let error = err;

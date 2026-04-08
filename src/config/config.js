@@ -1,19 +1,19 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
+import { join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+config({ path: join(process.cwd(), '../../.env') });
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
-
-const config = {
+const appConfig = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
   database: {
-    url: process.env.DATABASE_URL
-  }
+    url: process.env.DATABASE_URL,
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    accessExpirationMinutes: process.env.JWT_ACCESS_EXPIRATION_MINUTES,
+    refreshExpirationDays: process.env.JWT_REFRESH_EXPIRATION_DAYS,
+  },
 };
 
-export default config;
-
+export default appConfig;
