@@ -12,7 +12,9 @@ const validate = (schema) => (req, res, next) => {
     const result = validSchema[key].safeParse(object[key]);
 
     if (!result.success) {
-      result.error.errors.forEach((err) => {
+      // Zod v4: issues live in result.error.issues, not result.error.errors
+      const issues = result.error?.issues ?? [];
+      issues.forEach((err) => {
         errors.push(err.message);
       });
     } else {
