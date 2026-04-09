@@ -1,6 +1,4 @@
-export { default as authService } from './authService.js';
-export { default as tokenService } from './tokenService.js';
-export { default as userService } from './userService.js';
-// export * as authService from './auth.service.js';
-// export * as tokenService from './token.service.js';
-// export * as userService from './user.service.js';
+export * as authService from './authService.js';
+export * as tokenService from './tokenService.js';
+export * as userService from './userService.js';
+export * as categoryService from './categoryService.js';

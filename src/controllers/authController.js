@@ -24,7 +24,7 @@ const login = catchAsync(async (req, res) => {
   res.send({ user, tokens });
 });
 
-export default {
+export  {
   register,
   login,
 };

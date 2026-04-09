@@ -1,5 +1,5 @@
 import passport from 'passport';
-import ApiError from '../utils/ApiError';
+import ApiError from '../utils/ApiError.js';
 import status from 'http-status';
 
 const verifyCallback = (req, resolve, reject) => async (err, user, info) => {

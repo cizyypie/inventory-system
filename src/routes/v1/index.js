@@ -1,17 +1,16 @@
 import express from 'express';
 import authRoute from './authRoute.js';
+import categoryRoute from './categoryRoute.js';
 
 const router = express.Router();
 
 const defaultRoutes = [
-  {
-    path: '/auth',
-    route: authRoute,
-  },
+  { path: '/auth', route: authRoute },
+  { path: '/category', route: categoryRoute },
 ];
 
-defaultRoutes.forEach((route) => {
-  router.use(route.path, route.route);
+defaultRoutes.forEach(({ path, route }) => {
+  router.use(path, route);
 });
 
 export default router;
