@@ -8,9 +8,15 @@ import ApiError from '../utils/ApiError.js';
  * @returns {Promise<Category>}
  */
 const createCategory = async (categoryBody) => {
-  return prisma.category.create({
-    data: categoryBody
+  const existing = await prisma.category.findFirst({
+    where: { name: categoryBody.name }
   });
+
+  if (existing) {
+    throw new ApiError(status.BAD_REQUEST, 'Category name already exists');
+  }
+
+  return prisma.category.create({ data: categoryBody });
 };
 
 /**
