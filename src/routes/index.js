@@ -1,7 +1,7 @@
 import express from 'express';
 import authRoute from './authRoute.js';
 import categoryRoute from './categoryRoute.js';
-// import productRoute from './productRoute.js';
+import productRoute from './productRoute.js';
 import userRoute from './userRoute.js';
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const router = express.Router();
 const defaultRoutes = [
   { path: '/auth', route: authRoute },
   { path: '/categories', route: categoryRoute },
-  // { path: '/products', route: productRoute },
+  { path: '/products', route: productRoute },
   { path: '/users', route: userRoute },
 ];
 
