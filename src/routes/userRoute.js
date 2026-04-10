@@ -1,14 +1,16 @@
-import { Router } from "express";
-import { getAllUsers, getUserById, createUser, deleteUser, updateUser, getProductUser, getOrderUser } from "../controllers/userController.js";
+import express from 'express';
+import auth from '../middlewares/auth.js';
+import * as userController from '../controllers/userController.js';
 
-const router = Router(); 
+const router = express.Router();
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.post("/", createUser);
-router.put("/:id", updateUser);    
-router.delete("/:id", deleteUser);
-router.get("/id/products", getProductUser)
-router.get("/id/orders", getOrderUser)
+router.route('/')
+  .get(auth(), userController.getAllUsers)
+  .post(auth(), userController.createUser);
+
+router.route('/:userId')
+  .get(auth(), userController.getUserById)
+  .put(auth(), userController.updateUser)
+  .delete(auth(), userController.deleteUser);
 
 export default router;

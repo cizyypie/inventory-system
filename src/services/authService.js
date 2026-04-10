@@ -1,23 +1,25 @@
 import status from 'http-status';
 import bcrypt from 'bcryptjs';
-import userService from './userService.js';
+import prisma from '../../prisma/client.js';
 import ApiError from '../utils/ApiError.js';
 
-/**
- * Login with username and password
- * @param {string} email
- * @param {string} password
- * @returns {Promise<User>}
- */
-const loginUserWithEmailAndPassword = async (email, password) => {
-  const user = await userService.getUserByEmail(email);
+const register = async (userBody) => {
+  const existing = await prisma.user.findUnique({ where: { email: userBody.email } });
+  if (existing) {
+    throw new ApiError(status.BAD_REQUEST, 'Email already taken');
+  }
 
+  userBody.password = bcrypt.hashSync(userBody.password, 8);
+  return prisma.user.create({ data: userBody });
+};
+
+const login = async (email, password) => {
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     throw new ApiError(status.UNAUTHORIZED, 'Incorrect email or password');
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
-
   if (!validPassword) {
     throw new ApiError(status.UNAUTHORIZED, 'Incorrect email or password');
   }
@@ -29,7 +31,4 @@ const logout = async () => {
   return true;
 };
 
-export default {
-  loginUserWithEmailAndPassword,
-  logout,
-};
+export { register, login, logout };

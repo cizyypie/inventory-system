@@ -1,63 +1,52 @@
-import * as userService from '../services/userService.js';
-import { createUserSchema, updateUserSchema } from '../validations/userValidation.js';
-import catchAsync from '../utils/catchAsync';
-import ApiError from '../utils/ApiError';
 import status from 'http-status';
+import catchAsync from '../utils/catchAsync.js';
+import ApiError from '../utils/ApiError.js';
+import { userService } from '../services/index.js';
 
-export const createUser = catchAsync(async (req, res) => {
-  const validatedData = createUserSchema.parse(req.body);
-
-  const user = await userService.createUser(validatedData);
-  res.status(status.CREATED).json({ data: user });
+const createUser = catchAsync(async (req, res) => {
+  const user = await userService.createUser(req.body);
+  res.status(status.CREATED).send({
+    status: status.CREATED,
+    message: 'Create User Success',
+    data: user,
+  });
 });
 
-export const updateUser = catchAsync(async (req, res) => {
-  const validatedData = updateUserSchema.parse(req.body);
-
-  const user = await userService.updateUser(req.params.id, validatedData);
-  if (!user) {
-    throw new ApiError(status.NOT_FOUND, 'User not found');
-  }
-  res.status(status.OK).json({ data: user });
-});
-
-export const getAllUsers = catchAsync(async (req, res) => {
+const getAllUsers = catchAsync(async (req, res) => {
   const users = await userService.getAllUsers();
-  res.status(status.OK).json({ data: users });
+  res.status(status.OK).send({
+    status: status.OK,
+    message: 'Get All Users Success',
+    data: users,
+  });
 });
 
-export const getUserById = catchAsync(async (req, res) => {
+const getUserById = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
-
-  if (!user) {
-    throw new ApiError(status.NOT_FOUND, 'User not found');
-  }
-  res.status(status.OK).json({ data: user });
+  if (!user) throw new ApiError(status.NOT_FOUND, 'User not found');
+  res.status(status.OK).send({
+    status: status.OK,
+    message: 'Get User Success',
+    data: user,
+  });
 });
 
-export const deleteUser = catchAsync(async (req, res) => {
-  const user = await userService.deleteUser(req.params.id);
-
-  if (!user) {
-    throw new ApiError(status.NOT_FOUND, 'User not found');
-  }
-  res.status(status.OK).json({ message: 'User Deleted' });
+const updateUser = catchAsync(async (req, res) => {
+  const user = await userService.updateUserById(req.params.userId, req.body);
+  res.status(status.OK).send({
+    status: status.OK,
+    message: 'Update User Success',
+    data: user,
+  });
 });
 
-export const getProductUser = catchAsync(async (req, res) => {
-  const user = await userService.getProductUser(req.params.id);
-
-  if (!user) {
-    throw new ApiError(status.NOT_FOUND, 'User not found');
-  }
-  res.status(status.OK).json({ data: user });
+const deleteUser = catchAsync(async (req, res) => {
+  await userService.deleteUserById(req.params.userId);
+  res.status(status.OK).send({
+    status: status.OK,
+    message: 'Delete User Success',
+    data: null,
+  });
 });
 
-export const getOrderUser = catchAsync(async (req, res) => {
-  const user = await userService.getOrderUser(req.params.id);
-
-  if (!user) {
-    throw new ApiError(status.NOT_FOUND, 'User not found');
-  }
-  res.status(status.OK).json({ data: user });
-});
+export { createUser, getAllUsers, getUserById, updateUser, deleteUser };
