@@ -1,5 +1,5 @@
 import express from 'express';
-import router from './routes/v1/index.js';
+import router from './routes/index.js';
 import config from './config/config.js';
 import { successHandler, errorHandler as morganErrorHandler } from './config/morgan.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
@@ -45,8 +45,8 @@ passport.use('jwt', jwtStrategy);
 app.get('/', (req, res) => {
   res.send('hello world');
 });
-// v1 api routes
-app.use('/v1', router);
+// api routes
+app.use('/', router);
 
 // app.use(router);
 
