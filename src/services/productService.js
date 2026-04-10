@@ -4,8 +4,21 @@ import ApiError from '../utils/ApiError.js';
 
 const createProduct = async (productBody, userId) => {
   return prisma.product.create({
-    data: { productBody, userId },
-    include: { category: true },
+    data: {
+      name: productBody.name,
+      description: productBody.description,
+      price: productBody.price,
+      quantityInStock: productBody.quantityInStock,
+      category: {
+        connect: { id: productBody.categoryId },
+      },
+      user: {
+        connect: { id: userId },
+      },
+    },
+    include: {
+      category: true,
+    },
   });
 };
 
@@ -39,11 +52,18 @@ const updateProductById = async (productId, updateBody) => {
     throw new ApiError(status.NOT_FOUND, 'Product not found');
   }
 
-  return prisma.product.update({ 
-    where: { id: productId }, 
-    data: updateBody,
+  const { categoryId, ...rest } = updateBody;
+
+  return prisma.product.update({
+    where: { id: productId },
+    data: {
+      ...rest,
+      ...(categoryId && {
+        category: { connect: { id: categoryId } },
+      }),
+    },
     include: { category: true },
-     });
+  });
 };
 
 const deleteProductById = async (productId) => {

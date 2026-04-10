@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync.js';
 import { productService } from '../services/index.js';
 
 const createProduct = catchAsync(async (req, res) => {
-  const product = await productService.createProduct(req.body);
+  const product = await productService.createProduct(req.body, req.user.id);
   res.status(status.CREATED).send({
     status: status.CREATED,
     message: 'Create Product Success',
