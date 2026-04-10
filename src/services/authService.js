@@ -25,6 +25,11 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
+const logout = async () => {
+  return true;
+};
+
 export default {
   loginUserWithEmailAndPassword,
+  logout,
 };

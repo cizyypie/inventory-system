@@ -24,7 +24,16 @@ const login = catchAsync(async (req, res) => {
   res.send({ user, tokens });
 });
 
+const logout = catchAsync(async (req, res) => {
+  res.status(status.OK).send({
+    status: status.OK,
+    message: 'Logout Success',
+    data: null,
+  });
+});
+
 export  {
   register,
   login,
+  logout,
 };

@@ -12,7 +12,7 @@ const createCategory = catchAsync(async (req, res) => {
   });
 });
 
-const getCategorys = catchAsync(async (req, res) => {
+const getCategories = catchAsync(async (req, res) => {
   const result = await categoryService.queryCategorys();
   res.status(status.OK).send({
     status: status.OK,
@@ -49,4 +49,4 @@ const deleteCategory = catchAsync(async (req, res) => {
   });
 });
 
-export { createCategory, getCategorys, getCategory, updateCategory, deleteCategory };
+export { createCategory, getCategories, getCategory, updateCategory, deleteCategory };
