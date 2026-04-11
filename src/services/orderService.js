@@ -4,10 +4,7 @@ import ApiError from '../utils/ApiError.js';
 
 const createOrder = async (orderBody, userId) => {
   const { customerName, customerEmail, items } = orderBody;
-
-  // step 1 — validate all products exist and have enough stock (OUTSIDE transaction)
   const productIds = items.map((item) => item.productId);
-
   const products = await prisma.product.findMany({
     where: { id: { in: productIds } },
   });
@@ -26,7 +23,6 @@ const createOrder = async (orderBody, userId) => {
     }
   }
 
-  // step 2 — calculate prices (OUTSIDE transaction)
   const orderItems = items.map((item) => {
     const product = products.find((p) => p.id === item.productId);
     return {
@@ -41,7 +37,6 @@ const createOrder = async (orderBody, userId) => {
     0
   );
 
-  // step 3 — transaction only does the writes, no reads inside
   const order = await prisma.$transaction(
     async (tx) => {
       const newOrder = await tx.order.create({
@@ -65,7 +60,6 @@ const createOrder = async (orderBody, userId) => {
         },
       });
 
-      // bulk update all products in one go instead of looping
       await Promise.all(
         orderItems.map((item) =>
           tx.product.update({
@@ -78,7 +72,7 @@ const createOrder = async (orderBody, userId) => {
       return newOrder;
     },
     {
-      timeout: 15000, // increase timeout to 15s as safety net
+      timeout: 15000, 
     }
   );
 
