@@ -3,6 +3,7 @@ import authRoute from './authRoute.js';
 import categoryRoute from './categoryRoute.js';
 import productRoute from './productRoute.js';
 import userRoute from './userRoute.js';
+import orderRoute from './orderRoute.js';
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ const defaultRoutes = [
   { path: '/categories', route: categoryRoute },
   { path: '/products', route: productRoute },
   { path: '/users', route: userRoute },
+  { path: '/orders', route: orderRoute },
 ];
 
 defaultRoutes.forEach(({ path, route }) => {
