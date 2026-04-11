@@ -6,7 +6,7 @@ export const createProduct = {
     name: z.string().min(1),
     description: z.string().min(1),
     price: z.number().positive(),
-    quantityInStock: z.number().int().min(0),
+    quantityInStock: z.number().int().min(1, 'Stock must be at least 1'),
     categoryId: objectId,
   }),
 };
