@@ -11,6 +11,14 @@ export const createProduct = {
   }),
 };
 
+export const getProducts = {
+  query: z.object({
+    category: z.string().optional(),
+    page: z.coerce.number().int().positive().default(1),
+    size: z.coerce.number().int().positive().default(10),
+  }),
+};
+
 export const getProduct = {
   params: z.object({
     productId: objectId,

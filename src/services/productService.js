@@ -38,12 +38,32 @@ const getProductsByUserId = async (userId) => {
   });
 };
 
-const getAllProducts = async () => {
-  return prisma.product.findMany({
-    include: {
-      category: true,
+const getAllProducts = async ({ category, page, size }) => {
+  const skip = (page - 1) * size;
+
+  const where = category
+    ? { category: { name: { contains: category, mode: 'insensitive' } } }
+    : {};
+
+  const [data, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: { category: true },
+      skip,
+      take: size,
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total,
+      page,
+      size,
+      totalPages: Math.ceil(total / size),
     },
-  });
+  };
 };
 
 const updateProductById = async (productId, updateBody) => {

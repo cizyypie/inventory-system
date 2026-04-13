@@ -17,4 +17,9 @@ router
   .put(auth(), validate(productValidation.updateProduct), productController.updateProduct)
   .delete(auth(), validate(productValidation.deleteProduct), productController.deleteProduct);
 
+  router
+  .route('/')
+  .post(auth(), validate(productValidation.createProduct), productController.createProduct)
+  .get(auth(), validate(productValidation.getProducts), productController.getProducts); 
+  
 export default router;
