@@ -39,7 +39,9 @@ const getProductsByUserId = async (userId) => {
 };
 
 const getAllProducts = async ({ category, page, size }) => {
-  const skip = (page - 1) * size;
+  const pageNum = Number(page);
+  const sizeNum = Number(size);
+  const skip = (pageNum - 1) * sizeNum;
 
   const where = category
     ? { category: { name: { contains: category, mode: 'insensitive' } } }
@@ -49,8 +51,8 @@ const getAllProducts = async ({ category, page, size }) => {
     prisma.product.findMany({
       where,
       include: { category: true },
-      skip,
-      take: size,
+      skip,           
+      take: sizeNum,  
     }),
     prisma.product.count({ where }),
   ]);
@@ -59,9 +61,9 @@ const getAllProducts = async ({ category, page, size }) => {
     data,
     meta: {
       total,
-      page,
-      size,
-      totalPages: Math.ceil(total / size),
+      page: pageNum,
+      size: sizeNum,
+      totalPages: Math.ceil(total / sizeNum),
     },
   };
 };

@@ -14,7 +14,11 @@ const createProduct = catchAsync(async (req, res) => {
 
 const getProducts = catchAsync(async (req, res) => {
   const { category, page, size } = req.query;
-  const result = await productService.getAllProducts({ category, page, size });
+  const result = await productService.getAllProducts({ 
+    category, 
+    page: Number(page),   
+    size: Number(size),   
+  });
   res.status(status.OK).send({
     status: status.OK,
     message: 'Get Products Success',

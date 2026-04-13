@@ -7,9 +7,10 @@ export const createCategory = {
   }),
 };
 
-export const getCategory = {
-  params: z.object({
-    categoryId: objectId,
+export const getCategories = {
+  query: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    size: z.coerce.number().int().positive().default(10),
   }),
 };
 
