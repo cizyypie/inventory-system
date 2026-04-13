@@ -2,15 +2,10 @@ import status from 'http-status';
 import bcrypt from 'bcryptjs';
 import prisma from '../../prisma/client.js';
 import ApiError from '../utils/ApiError.js';
+import { createUser } from './userService.js';
 
 const register = async (userBody) => {
-  const existing = await prisma.user.findUnique({ where: { email: userBody.email } });
-  if (existing) {
-    throw new ApiError(status.BAD_REQUEST, 'Email already taken');
-  }
-
-  userBody.password = bcrypt.hashSync(userBody.password, 8);
-  return prisma.user.create({ data: userBody });
+  return createUser(userBody); 
 };
 
 const login = async (email, password) => {
