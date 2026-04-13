@@ -88,7 +88,6 @@ const getAllOrders = async () => {
 };
 
 const getOrderById = async (id) => {
-  console.log('getOrderById id:', id);
   return prisma.order.findUnique({
     where: { id },
     include: {
