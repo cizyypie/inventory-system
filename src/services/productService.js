@@ -1,5 +1,5 @@
 import status from 'http-status';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 import ApiError from '../utils/ApiError.js';
 
 const createProduct = async (productBody, userId) => {
@@ -23,10 +23,10 @@ const createProduct = async (productBody, userId) => {
 };
 
 const getProductById = async (id) => {
-  return prisma.product.findUnique({ 
-    where: { id }, 
-    include: { category: true } 
-    });
+  return prisma.product.findUnique({
+    where: { id },
+    include: { category: true },
+  });
 };
 
 const getProductsByUserId = async (userId) => {
@@ -43,16 +43,14 @@ const getAllProducts = async ({ category, page, size }) => {
   const sizeNum = Number(size);
   const skip = (pageNum - 1) * sizeNum;
 
-  const where = category
-    ? { category: { name: { contains: category, mode: 'insensitive' } } }
-    : {};
+  const where = category ? { category: { name: { contains: category, mode: 'insensitive' } } } : {};
 
   const [data, total] = await Promise.all([
     prisma.product.findMany({
       where,
       include: { category: true },
-      skip,           
-      take: sizeNum,  
+      skip,
+      take: sizeNum,
     }),
     prisma.product.count({ where }),
   ]);

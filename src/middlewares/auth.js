@@ -3,10 +3,9 @@ const { verify } = jwtPkg;
 import config from '../config/config.js';
 import ApiError from '../utils/ApiError.js';
 import status from 'http-status';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 
 const auth = () => async (req, res, next) => {
-  
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 

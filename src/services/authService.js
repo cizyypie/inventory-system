@@ -1,11 +1,11 @@
 import status from 'http-status';
 import bcrypt from 'bcryptjs';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 import ApiError from '../utils/ApiError.js';
 import { createUser } from './userService.js';
 
 const register = async (userBody) => {
-  return createUser(userBody); 
+  return createUser(userBody);
 };
 
 const login = async (email, password) => {

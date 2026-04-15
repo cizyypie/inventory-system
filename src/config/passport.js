@@ -3,7 +3,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = pkg;
 
 import config from './config.js';
 import tokenTypes from './tokens.js';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 
 const jwtOptions = {
   secretOrKey: config.jwt.secret,

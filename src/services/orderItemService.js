@@ -1,5 +1,5 @@
 import status from 'http-status';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 import ApiError from '../utils/ApiError.js';
 
 const createOrderItem = async (body) => {
@@ -20,7 +20,7 @@ const createOrderItem = async (body) => {
   if (product.quantityInStock < quantity) {
     throw new ApiError(
       status.BAD_REQUEST,
-      `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`
+      `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`,
     );
   }
 
@@ -52,7 +52,7 @@ const createOrderItem = async (body) => {
 
       return orderItem;
     },
-    { timeout: 15000 }
+    { timeout: 15000 },
   );
 };
 
@@ -97,7 +97,7 @@ const updateOrderItemById = async (orderItemId, updateBody) => {
   if (quantityDiff > 0 && product.quantityInStock < quantityDiff) {
     throw new ApiError(
       status.BAD_REQUEST,
-      `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`
+      `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`,
     );
   }
 
@@ -125,7 +125,7 @@ const updateOrderItemById = async (orderItemId, updateBody) => {
 
       return updated;
     },
-    { timeout: 15000 }
+    { timeout: 15000 },
   );
 };
 
@@ -152,7 +152,7 @@ const deleteOrderItemById = async (orderItemId) => {
         },
       });
     },
-    { timeout: 15000 }
+    { timeout: 15000 },
   );
 };
 

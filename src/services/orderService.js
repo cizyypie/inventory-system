@@ -1,5 +1,5 @@
 import status from 'http-status';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 import ApiError from '../utils/ApiError.js';
 
 const createOrder = async (orderBody, userId) => {
@@ -18,7 +18,7 @@ const createOrder = async (orderBody, userId) => {
     if (product.quantityInStock < item.quantity) {
       throw new ApiError(
         status.BAD_REQUEST,
-        `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`
+        `Insufficient stock for product: ${product.name}. Available: ${product.quantityInStock}`,
       );
     }
   }
@@ -32,10 +32,7 @@ const createOrder = async (orderBody, userId) => {
     };
   });
 
-  const totalPrice = orderItems.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  );
+  const totalPrice = orderItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
 
   const order = await prisma.$transaction(
     async (tx) => {
@@ -65,15 +62,15 @@ const createOrder = async (orderBody, userId) => {
           tx.product.update({
             where: { id: item.productId },
             data: { quantityInStock: { decrement: item.quantity } },
-          })
-        )
+          }),
+        ),
       );
 
       return newOrder;
     },
     {
-      timeout: 15000, 
-    }
+      timeout: 15000,
+    },
   );
 
   return order;
@@ -135,7 +132,7 @@ const deleteOrderById = async (orderId) => {
   return prisma.$transaction(async (tx) => {
     await tx.orderItem.deleteMany({ where: { orderId } });
     await tx.order.delete({ where: { id: orderId } });
- });
+  });
 };
 
 export { createOrder, getAllOrders, getOrderById, updateOrderById, deleteOrderById, getOrdersByUserId };

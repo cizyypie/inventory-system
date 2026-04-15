@@ -1,6 +1,6 @@
 import status from 'http-status';
 import bcrypt from 'bcryptjs';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 import ApiError from '../utils/ApiError.js';
 
 const createUser = async (userBody) => {

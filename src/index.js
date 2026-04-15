@@ -1,7 +1,7 @@
 import app from './app.js';
 import config from './config/config.js';
 import logger from './config/logger.js';
-import prisma from '../prisma/client.js';
+import prisma from '../prisma/index.js';
 
 let server;
 

@@ -4,7 +4,7 @@ const { sign, verify } = jwtPkg;
 import moment from 'moment';
 import config from '../config/config.js';
 import tokenTypes from '../config/tokens.js';
-import prisma from '../../prisma/client.js';
+import prisma from '../../prisma/index.js';
 
 export const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
   const payload = {
