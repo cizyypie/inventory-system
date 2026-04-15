@@ -1,7 +1,7 @@
-import { jest } from '@jest/globals';
+import { jest } from '@jest/globals'
 
-jest.unstable_mockModule('./prisma/index.js', () => {
-  return import('./prisma/__mocks__/index.js');
-});
+jest.unstable_mockModule('./prisma/index.js', () => ({
+  default: (import('./prisma/mocks/index.js')).default,
+}))
 
-jest.setTimeout(30000);
+jest.setTimeout(30000)

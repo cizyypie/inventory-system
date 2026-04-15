@@ -7,4 +7,5 @@ export default {
   coveragePathIgnorePatterns: ['node_modules', 'src/config', 'src/app.js', 'tests'],
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
   setupFilesAfterEnv: ['./mocks.js'],
-};
+  transform: {},
+}

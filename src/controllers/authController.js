@@ -4,13 +4,13 @@ import * as tokenService from '../services/tokenService.js';
 import { authService } from '../services/index.js';
 
 const register = catchAsync(async (req, res) => {
-  const user = await authService.register(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
+  const userCreated = await authService.register(req.body);
+  const tokens = await tokenService.generateAuthTokens(userCreated);
 
   res.status(status.CREATED).send({
     status: status.CREATED,
     message: 'Register Success',
-    data: { user, tokens },
+    data: { userCreated, tokens },
   });
 });
 

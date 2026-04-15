@@ -10,8 +10,8 @@ import prisma from '../../prisma/index.js';
 import auth from '../../src/middlewares/auth.js';
 import ApiError from '../../src/utils/ApiError.js';
 import config from '../../src/config/config.js';
-import { tokenService } from '../../src/services/index.js';
-import { tokenTypes } from '../../src/config/tokens.js';
+import * as tokenService from '../../src/services/tokenService.js';
+import tokenTypes from '../../src/config/tokens.js';
 
 describe('Auth routes', () => {
   describe('POST /v1/auth/register', () => {

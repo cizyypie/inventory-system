@@ -18,10 +18,9 @@
     "prettier": "prettier --check **/*.js",
     "prettier:fix": "prettier --write **/*.js",
     "prepare": "husky install",
-    "test": "jest -i --colors --verbose --detectOpenHandles",
-    "test:watch": "jest -i --watchAll",
-    "coverage": "jest -i --coverage",
-    "coverage:coveralls": "jest -i --coverage --coverageReporters=text-lcov | coveralls"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --colors --verbose --detectOpenHandles --forceExit",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --watchAll --forceExit",
+    "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --coverage --forceExit"
   },
   "type": "module",
   "keywords": [
