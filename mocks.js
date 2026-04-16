@@ -1,7 +1,13 @@
 import { jest } from '@jest/globals'
+import { config } from 'dotenv'
+import { join } from 'path'
+
+config({ path: join(process.cwd(), '.env.test') })
+
+const prismaMock = await import('./prisma/__mocks__/index.js')
 
 jest.unstable_mockModule('./prisma/index.js', () => ({
-  default: (import('./prisma/mocks/index.js')).default,
+  default: prismaMock.default,
 }))
 
 jest.setTimeout(30000)

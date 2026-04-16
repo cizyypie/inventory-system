@@ -15,6 +15,11 @@ const auth = () => async (req, res, next) => {
 
   try {
     const payload = verify(token, config.jwt.secret);
+
+    if (payload.type !== 'access') {
+      return next(new ApiError(status.UNAUTHORIZED, 'Please authenticate'));
+    }
+
     const user = await prisma.user.findUnique({ where: { id: payload.sub } });
     if (!user) {
       return next(new ApiError(status.UNAUTHORIZED, 'Please authenticate'));
