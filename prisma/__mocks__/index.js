@@ -23,13 +23,13 @@ const prisma = new PrismaClient({
 
 beforeAll(async () => {
   execSync(`${prismaBinary} db push`, {
-    env: { ...process.env, DATABASE_URL: url },
+    env: { ...process.env, TEST_DB_URL: url },
   })
 })
 
 beforeEach(async () => {
-  await prisma.user.deleteMany()
   await prisma.token.deleteMany()
+  await prisma.user.deleteMany()
 })
 
 afterAll(async () => {

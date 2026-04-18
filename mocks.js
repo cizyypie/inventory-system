@@ -2,7 +2,7 @@ import { jest } from '@jest/globals'
 import { config } from 'dotenv'
 import { join } from 'path'
 
-config({ path: join(process.cwd(), '.env.test') })
+config({ path: join(process.cwd(), '.env') })
 
 const prismaMock = await import('./prisma/__mocks__/index.js')
 
