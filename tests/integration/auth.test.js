@@ -12,6 +12,7 @@ import ApiError from '../../src/utils/ApiError.js';
 import config from '../../src/config/config.js';
 import * as tokenService from '../../src/services/tokenService.js';
 import tokenTypes from '../../src/config/tokens.js';
+import { jest } from '@jest/globals'
 
 describe('Auth routes', () => {
   describe('POST /auth/register', () => {
@@ -27,7 +28,6 @@ describe('Auth routes', () => {
 
     test('should return 201 and successfully register user if request data is ok', async () => {
       const res = await request(app).post('/auth/register').send(newUser).expect(httpStatus.CREATED);
-
       const userData = res.body.data.userCreated;
 
       expect(userData).toEqual({
