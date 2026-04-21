@@ -45,6 +45,9 @@ const handlePrismaClientError = (err) => {
     case 'P2003':
       // handling invalid data errors
       return new ApiError(400, `Invalid input data: ${err.meta.target}`, false, err.stack);
+    case 'P2025':
+      // record not found / foreign key not found
+      return new ApiError(400, `Related record not found: ${err.meta?.cause || err.meta?.target}`, false, err.stack);
     default:
       // handling all other errors
       return new ApiError(500, `Something went wrong: ${err.message}`, false, err.stack);
