@@ -1,6 +1,7 @@
 export const categoryOne = {
-  name: 'laptop'
-}
+  name: 'laptop',
+};
 
-// store the created category id for later use
-export let categoryOneId = null
+export const categoryTwo = {
+  name: 'phone',
+};

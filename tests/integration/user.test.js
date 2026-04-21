@@ -1,8 +1,11 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import app from '../../src/app.js';
+import setupTestDB from '../setup/setupTestDB.js';
 import { userOne, admin, insertUsers } from '../fixtures/user.fixture.js';
 import { userOneAccessToken, adminAccessToken } from '../fixtures/token.fixture.js';
+
+setupTestDB();
 
 describe('Users access', () => {
   describe('GET /users', () => {

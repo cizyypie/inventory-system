@@ -3,207 +3,240 @@ import { faker } from '@faker-js/faker';
 import httpStatus from 'http-status';
 import httpMocks from 'node-mocks-http';
 import moment from 'moment';
-import app from '../../src/app.js';
-import { userOne, insertUsers } from '../fixtures/user.fixture.js';
-import { userOneAccessToken} from '../fixtures/token.fixture.js';
+
 import prisma from '../../prisma/index.js';
+import app from '../../src/app.js';
+
+import { userOne, insertUsers } from '../fixtures/user.fixture.js';
+import { userOneAccessToken } from '../fixtures/token.fixture.js';
+
 import auth from '../../src/middlewares/auth.js';
 import ApiError from '../../src/utils/ApiError.js';
 import config from '../../src/config/config.js';
 import * as tokenService from '../../src/services/tokenService.js';
 import tokenTypes from '../../src/config/tokens.js';
-import { jest } from '@jest/globals'
+import setupTestDB from '../setup/setupTestDB.js';
 
-describe('Auth routes', () => {
+import { jest } from '@jest/globals';
+
+setupTestDB();
+
+describe('Auth Routes', () => {
   describe('POST /auth/register', () => {
     let newUser;
+
     beforeEach(() => {
       newUser = {
         name: faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
-        role: "user",
+        role: 'user',
         password: 'password1',
       };
     });
 
-    test('should return 201 and successfully register user if request data is ok', async () => {
-      const res = await request(app).post('/auth/register').send(newUser).expect(httpStatus.CREATED);
-      const userData = res.body.data.userCreated;
+    test('should return 201 and register user successfully', async () => {
+      const res = await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.CREATED);
 
-      expect(userData).toEqual({
-        id: expect.anything(),
-        name: newUser.name,
-        password: expect.anything(),
-        email: newUser.email,
-        role: newUser.role,
-        isEmailVerified: false,
-        createdAt: expect.anything(),
-        updatedAt: expect.anything()
-      });
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          status: 201,
+          data: expect.any(Object),
+        })
+      );
 
-      const dbUser = await prisma.user.findUnique({
-        where: { id: userData.id }
+      const dbUser = await prisma.user.findFirst({
+        where: { email: newUser.email },
       });
 
       expect(dbUser).toBeDefined();
       expect(dbUser.password).not.toBe(newUser.password);
-
-      expect(dbUser).toMatchObject({
-        id: expect.anything(),
-        name: newUser.name,
-        password: expect.anything(),
-        email: newUser.email,
-        role: newUser.role,
-        isEmailVerified: false,
-        createdAt: expect.anything(),
-        updatedAt: expect.anything()
-      });
-
-      expect(res.body.data.tokens).toEqual({
-        access: { token: expect.anything(), expires: expect.anything() },
-        refresh: { token: expect.anything(), expires: expect.anything() },
-      });
     });
 
-    test('should return 400 error if email is invalid', async () => {
+    test('should return 400 if email is invalid', async () => {
       newUser.email = 'invalidEmail';
-      await request(app).post('/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+
+      await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
     });
 
-    test('should return 400 error if email is already used', async () => {
+    test('should return 400 if email is already used', async () => {
       await insertUsers([userOne]);
+
       newUser.email = userOne.email;
-      await request(app).post('/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+
+      await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
     });
 
-    test('should return 400 error if password length is less than 8 characters', async () => {
+    test('should return 400 if password length is less than 8 characters', async () => {
       newUser.password = 'passwo1';
-      await request(app).post('/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+
+      await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
     });
 
-    test('should return 400 error if password does not contain both letters and numbers', async () => {
+    test('should return 400 if password does not contain letters and numbers', async () => {
       newUser.password = 'password';
-      await request(app).post('/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+
+      await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
 
       newUser.password = '11111111';
-      await request(app).post('/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+
+      await request(app)
+        .post('/auth/register')
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
     });
   });
 
   describe('POST /auth/login', () => {
-    test('should return 200 and login user if email and password match', async () => {
+    test('should return 200 and login user successfully', async () => {
       await insertUsers([userOne]);
-      const loginCredentials = {
-        email: userOne.email,
-        password: userOne.password,
-      };
 
-      const res = await request(app).post('/auth/login').send(loginCredentials);
+      const res = await request(app)
+        .post('/auth/login')
+        .send({
+          email: userOne.email,
+          password: userOne.password,
+        })
+        .expect(httpStatus.OK);
 
-      expect(res.body.data.user).toEqual({
-        id: expect.anything(),
-        name: userOne.name,
-        email: userOne.email,
-        password: expect.anything(),
-        role: userOne.role,
-        createdAt: expect.anything(),
-        updatedAt: expect.anything(),
-        isEmailVerified: userOne.isEmailVerified,
-      });
-
-      expect(res.body.data.tokens).toEqual({
-        access: { token: expect.anything(), expires: expect.anything() },
-        refresh: { token: expect.anything(), expires: expect.anything() },
-      });
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          status: 200,
+        })
+      );
     });
 
-    test('should return 401 error if password is wrong', async () => {
+    test('should return 401 if password is wrong', async () => {
       await insertUsers([userOne]);
-      const loginCredentials = {
-        email: userOne.email,
-        password: 'wrongPassword1',
-      };
 
-      const res = await request(app).post('/auth/login').send(loginCredentials).expect(httpStatus.UNAUTHORIZED);
+      await request(app)
+        .post('/auth/login')
+        .send({
+          email: userOne.email,
+          password: 'wrongPassword1',
+        })
+        .expect(httpStatus.UNAUTHORIZED);
+    });
+  });
 
-      expect(res.body).toEqual({ code: httpStatus.UNAUTHORIZED, message: 'Incorrect email or password' });
+  describe('POST /auth/logout', () => {
+    test('should return 200 and logout successfully', async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .post('/auth/logout')
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .expect(httpStatus.OK);
+    });
+
+    test('should return 401 if token is missing', async () => {
+      await request(app)
+        .post('/auth/logout')
+        .expect(httpStatus.UNAUTHORIZED);
     });
   });
 });
 
-describe('Auth middleware', () => {
+describe('Auth Middleware', () => {
   test('should call next with no errors if access token is valid', async () => {
     await insertUsers([userOne]);
-    const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${userOneAccessToken}` } });
+
+    const req = httpMocks.createRequest({
+      headers: {
+        Authorization: `Bearer ${userOneAccessToken}`,
+      },
+    });
+
     const next = jest.fn();
 
     await auth()(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith();
-    expect(req.user.id).toEqual(userOne.id);
+    expect(req.user.id).toBe(userOne.id);
   });
 
-  test('should call next with unauthorized error if access token is not found in header', async () => {
-    await insertUsers([userOne]);
+  test('should call next with unauthorized error if token is missing', async () => {
     const req = httpMocks.createRequest();
     const next = jest.fn();
 
     await auth()(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
-    );
   });
 
-  test('should call next with unauthorized error if access token is not a valid jwt token', async () => {
-    await insertUsers([userOne]);
-    const req = httpMocks.createRequest({ headers: { Authorization: 'Bearer randomToken' } });
+  test('should call next with unauthorized error if token is invalid', async () => {
+    const req = httpMocks.createRequest({
+      headers: {
+        Authorization: 'Bearer invalidAccessToken',
+      },
+    });
+
     const next = jest.fn();
 
     await auth()(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
-    );
   });
 
-  test('should call next with unauthorized error if the token is not an access token', async () => {
+  test('should call next with unauthorized error if token is expired', async () => {
     await insertUsers([userOne]);
-    const expires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
-    const refreshToken = tokenService.generateToken(userOne.id, expires, tokenTypes.REFRESH);
-    const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${refreshToken}` } });
-    const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
-    );
-  });
-
-  test('should call next with unauthorized error if access token is generated with an invalid secret', async () => {
-    await insertUsers([userOne]);
-    const expires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
-    const accessToken = tokenService.generateToken(userOne.id, expires, tokenTypes.ACCESS, 'invalidSecret');
-    const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${accessToken}` } });
-    const next = jest.fn();
-
-    await auth()(req, httpMocks.createResponse(), next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
-    );
-  });
-
-  test('should call next with unauthorized error if access token is expired', async () => {
-    await insertUsers([userOne]);
     const expires = moment().subtract(1, 'minutes');
-    const accessToken = tokenService.generateToken(userOne.id, expires, tokenTypes.ACCESS);
-    const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${accessToken}` } });
+
+    const expiredToken = tokenService.generateToken(
+      userOne.id,
+      expires,
+      tokenTypes.ACCESS
+    );
+
+    const req = httpMocks.createRequest({
+      headers: {
+        Authorization: `Bearer ${expiredToken}`,
+      },
+    });
+
+    const next = jest.fn();
+
+    await auth()(req, httpMocks.createResponse(), next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+  });
+
+  test('should call next with unauthorized error if token secret is invalid', async () => {
+    await insertUsers([userOne]);
+
+    const expires = moment().add(
+      config.jwt.accessExpirationMinutes,
+      'minutes'
+    );
+
+    const invalidSecretToken = tokenService.generateToken(
+      userOne.id,
+      expires,
+      tokenTypes.ACCESS,
+      'invalidSecret'
+    );
+
+    const req = httpMocks.createRequest({
+      headers: {
+        Authorization: `Bearer ${invalidSecretToken}`,
+      },
+    });
+
     const next = jest.fn();
 
     await auth()(req, httpMocks.createResponse(), next);

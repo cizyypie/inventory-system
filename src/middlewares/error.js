@@ -11,7 +11,6 @@ const errorConverter = (err, req, res, next) => {
     if (error.response) {
       const message = err.response.data.message || err.response.data;
       const statusCode = error.response.status;
-
       logger.info('handleAxiosError');
       error = new ApiError(statusCode, message, false, err.stack);
     } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
