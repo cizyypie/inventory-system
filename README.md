@@ -1,10 +1,104 @@
 # Inventory System Backend
 
-REST API for managing inventory, products, categories, orders, and users.
+REST API for managing inventory, products, categories, orders, and users. Built with Node.js, Express, Prisma ORM, and PostgreSQL.
 
 **Base URL:** `http://localhost:3000`
 
 ---
+
+## Table of Contents
+
+* [Tech Stack](#tech-stack)
+* [Getting Started](#getting-started)
+* [Database Models](#database-models)
+* [Validation](#validation)
+* [Middleware](#middleware)
+* [API Endpoints](#api-endpoints)
+* [Testing](#testing)
+
+---
+
+## Tech Stack
+
+| Technology        | Purpose               |
+| ----------------- | --------------------- |
+| Node.js + Express | HTTP server & routing |
+| Prisma ORM        | Database access layer |
+| PostgreSQL        | Relational database   |
+| JWT               | Authentication        |
+| Zod               | Request validation    |
+| bcryptjs          | Password hashing      |
+| Winston + Morgan  | Logging               |
+| Jest + Supertest  | Testing               |
+
+## Getting Started
+
+### Environment Variables
+
+```env
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgresql://user:password@localhost:5432/inventory_db
+JWT_SECRET=your_jwt_secret
+JWT_ACCESS_EXPIRATION_MINUTES=30
+JWT_REFRESH_EXPIRATION_DAYS=7
+```
+
+### Run Project
+
+```bash
+npm run dev
+```
+
+### Database Setup
+
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
+
+---
+
+## Database Models
+
+* User
+* Token
+* Category
+* Product
+* Order
+* OrderItem
+
+Relations:
+
+* User has many Products, Orders, Tokens
+* Category has many Products
+* Product has many OrderItems
+* Order has many OrderItems
+
+---
+
+## Validation
+
+Requests are validated using Zod through `validate()` middleware.
+
+* Validates `body`, `params`, and `query`
+* Returns `400 Bad Request` on invalid input
+* Sanitized values are written back to request object
+
+---
+
+## Middleware
+
+* `auth()` - Verify JWT access token
+* `authorization(...roles)` - Role-based access control
+* `validate(schema)` - Validate request data
+* `errorConverter` - Normalize internal errors
+* `errorHandler` - Send final JSON error response
+* `catchAsync` - Forward async errors automatically
+
+---
+
+# API Endpoints
 
 ## Auth
 
@@ -12,89 +106,25 @@ REST API for managing inventory, products, categories, orders, and users.
 
 Register a new user.
 
-**Auth Required:** No
-
-#### Body
-
-```json
-{
-  "name": "User1",
-  "email": "user1@example.com",
-  "password": "password1"
-}
-```
-
-#### Success `201`
-
-```json
-{
-  "status": 201,
-  "message": "Register Success"
-}
-```
-
-#### Errors
-
-* `400` Email already taken
-* `400` Invalid email format
-* `400` Weak password
-
----
-
 ### POST `/auth/login`
 
-Login user.
-
-**Auth Required:** No
-
-#### Body
-
-```json
-{
-  "email": "user1@example.com",
-  "password": "password1"
-}
-```
-
-#### Success `200`
-
-```json
-{
-  "status": 200,
-  "message": "Login Success"
-}
-```
-
-#### Errors
-
-* `401` Incorrect email or password
-
----
+Login user and receive access + refresh token.
 
 ### POST `/auth/logout`
 
 Logout current user.
 
-**Auth Required:** Bearer Token
-
-#### Success `200`
-
-```json
-{
-  "status": 200,
-  "message": "Logout Success"
-}
-```
-
 ---
 
-## Users
-
-> Admin only
+## Users (Admin Only)
 
 ### GET `/users`
 
 Get all users.
+
+### POST `/users`
+
+Create user.
 
 ### GET `/users/:userId`
 
@@ -150,7 +180,7 @@ Create product.
 
 ### GET `/products`
 
-Get products with pagination and category filter.
+Get products with pagination and optional category filter.
 
 ### GET `/products/:productId`
 
@@ -166,9 +196,7 @@ Delete product.
 
 ---
 
-## Orders
-
-> Admin only
+## Orders (Admin Only)
 
 ### POST `/orders`
 
@@ -192,13 +220,11 @@ Delete order.
 
 ### GET `/orders/:orderId/order-items`
 
-Get items by order.
+Get order items by order.
 
 ---
 
-## Order Items
-
-> Admin only
+## Order Items (Admin Only)
 
 ### POST `/order-items`
 
@@ -219,3 +245,15 @@ Update order item.
 ### DELETE `/order-items/:orderItemId`
 
 Delete order item.
+
+---
+
+## Testing
+
+```bash
+npm test
+```
+
+## Author
+
+Inventory System Backend Project.
