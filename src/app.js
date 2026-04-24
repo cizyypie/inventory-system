@@ -11,7 +11,11 @@ import cors from 'cors';
 import { jwtStrategy } from './config/passport.js';
 import passport from 'passport';
 import status from 'http-status';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 const app = express();
 
 if (config.env !== 'test') {
@@ -19,6 +23,9 @@ if (config.env !== 'test') {
   app.use(morganErrorHandler);
 }
 
+
+app.set('view engine', 'ejs'); // Mengatur EJS sebagai template engine
+app.set('views', path.join(__dirname, 'views')); // Mengatur direktori views
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,7 +36,10 @@ app.options('*', cors());
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
-app.get('/', (req, res) => {res.send('hello world')});
+app.get('/', (req, res) => { res.render('index', {
+    judul: 'Selamat Datang!',
+    pesan: 'Ini adalah contoh template EJS.'
+  });});
 app.use('/', router);
 app.use((req, res, next) => {
   next(new ApiError(status.NOT_FOUND, 'Not found'));

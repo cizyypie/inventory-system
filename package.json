@@ -49,6 +49,7 @@
     "compression": "^1.7.5",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
+    "ejs": "^5.0.2",
     "express": "^4.22.1",
     "express-rate-limit": "^7.5.0",
     "exprss": "^0.0.1-security",
